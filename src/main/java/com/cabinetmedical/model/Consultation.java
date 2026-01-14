@@ -1,5 +1,6 @@
 package com.cabinetmedical.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -61,6 +62,7 @@ public class Consultation {
     @NotNull(message = "Doctorul este obligatoriu")
     private Doctor doctor;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "consultation", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Prescription prescription;
+    private Prescription reteta;
 }

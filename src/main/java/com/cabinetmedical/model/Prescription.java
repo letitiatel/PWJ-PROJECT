@@ -1,5 +1,6 @@
 package com.cabinetmedical.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -49,6 +50,7 @@ public class Prescription {
     @JoinColumn(name = "consultatie_id")
     private Consultation consultation;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "prescription", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PrescriptionMedication > medicamente = new ArrayList<>();
+    private List<PrescriptionMedication> medicamente = new ArrayList<>();
 }

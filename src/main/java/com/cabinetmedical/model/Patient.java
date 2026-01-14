@@ -1,5 +1,6 @@
 package com.cabinetmedical.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -60,9 +61,11 @@ public class Patient {
     @Column(name = "alergii", length = 500)
     private String alergii;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Consultation> consultatii = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Prescription> retete = new ArrayList<>();
 }
