@@ -47,6 +47,16 @@ public class Doctor {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    @Min(value = 0, message = "Anii de experiență nu pot fi negativi")
+    @Max(value = 70, message = "Anii de experiență nu pot depăși 70")
+    @Column(name = "ani_experienta")
+    private Integer aniExperienta;
+
+    @DecimalMin(value = "0.0", message = "Rating-ul nu poate fi negativ")
+    @DecimalMax(value = "10.0", message = "Rating-ul nu poate depăși 10")
+    @Column(name = "rating")
+    private Double rating;
+
     @JsonIgnore
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Consultation> consultatii = new ArrayList<>();

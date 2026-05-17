@@ -20,15 +20,13 @@ public class ConsultationService {
 
     @Transactional
     public Consultation createConsultation(Consultation consultation) {
-        // Verificăm dacă pacientul există
+
         Patient patient = patientService.getPatientById(consultation.getPatient().getId());
         consultation.setPatient(patient);
 
-        // Verificăm dacă medicul există
         Doctor doctor = doctorService.getDoctorById(consultation.getDoctor().getId());
         consultation.setDoctor(doctor);
 
-        // Verificăm dacă medicul are deja o consultație la aceeași dată și oră
         List<Consultation> existingConsultations = consultationRepository
                 .findByDoctorIdAndDataAndOra(doctor.getId(), consultation.getData(), consultation.getOra());
 

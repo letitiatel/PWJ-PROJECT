@@ -23,21 +23,18 @@ public class PrescriptionService {
 
     @Transactional
     public Prescription createPrescription(Prescription prescription) {
-        // Verificăm dacă pacientul există
+
         Patient patient = patientService.getPatientById(prescription.getPatient().getId());
         prescription.setPatient(patient);
 
-        // Verificăm dacă medicul există
         Doctor doctor = doctorService.getDoctorById(prescription.getDoctor().getId());
         prescription.setDoctor(doctor);
 
-        // Verificăm dacă consultația există (opțional)
         if (prescription.getConsultation() != null && prescription.getConsultation().getId() != null) {
             Consultation consultation = consultationService.getConsultationById(prescription.getConsultation().getId());
             prescription.setConsultation(consultation);
         }
 
-        // Setăm data emiterii la data curentă dacă nu este setată
         if (prescription.getDataEmitere() == null) {
             prescription.setDataEmitere(LocalDate.now());
         }

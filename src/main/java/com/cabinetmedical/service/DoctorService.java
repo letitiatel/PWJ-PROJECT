@@ -44,6 +44,8 @@ public class DoctorService {
         doctor.setSpecializare(doctorDetails.getSpecializare());
         doctor.setTelefon(doctorDetails.getTelefon());
         doctor.setEmail(doctorDetails.getEmail());
+        doctor.setAniExperienta(doctorDetails.getAniExperienta());
+        doctor.setRating(doctorDetails.getRating());
 
         return doctorRepository.save(doctor);
     }
