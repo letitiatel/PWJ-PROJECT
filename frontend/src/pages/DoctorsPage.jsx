@@ -29,6 +29,7 @@ export default function DoctorsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
+  const [sort, setSort] = useState("default");
   const [page, setPage] = useState(1);
 
   const specializare = searchParams.get("specializare") || "";
@@ -63,15 +64,29 @@ export default function DoctorsPage() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return doctors;
-    return doctors.filter((d) =>
-      `${d.nume} ${d.prenume}`.toLowerCase().includes(q)
-    );
-  }, [doctors, query]);
+    const list = q
+      ? doctors.filter((d) =>
+          `${d.nume} ${d.prenume}`.toLowerCase().includes(q)
+        )
+      : [...doctors];
+
+    if (sort === "rating-desc" || sort === "rating-asc") {
+      list.sort((a, b) => {
+        const aHas = typeof a.rating === "number";
+        const bHas = typeof b.rating === "number";
+        // doctors without a rating always go last
+        if (aHas && !bHas) return -1;
+        if (!aHas && bHas) return 1;
+        if (!aHas && !bHas) return 0;
+        return sort === "rating-desc" ? b.rating - a.rating : a.rating - b.rating;
+      });
+    }
+    return list;
+  }, [doctors, query, sort]);
 
   useEffect(() => {
     setPage(1);
-  }, [query, specializare]);
+  }, [query, specializare, sort]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
@@ -97,7 +112,7 @@ export default function DoctorsPage() {
         </div>
       </div>
 
-      <div className="mt-6 grid sm:grid-cols-2 gap-3">
+      <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
         <div className="relative">
           <SearchIcon className="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
@@ -119,6 +134,16 @@ export default function DoctorsPage() {
               {s}
             </option>
           ))}
+        </select>
+        <select
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
+          className="w-full rounded-lg border border-slate-300 px-4 py-2.5 bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none"
+          aria-label="Sortează medicii"
+        >
+          <option value="default">Sortare implicită</option>
+          <option value="rating-desc">Rating: de la cel mai mare</option>
+          <option value="rating-asc">Rating: de la cel mai mic</option>
         </select>
       </div>
 

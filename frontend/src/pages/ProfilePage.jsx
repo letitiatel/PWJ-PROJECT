@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const NAME_RE = /^[\p{L}][\p{L} .'\-]{1,49}$/u;
@@ -14,6 +14,7 @@ const FIELD_LABELS = {
   telefon: "Telefon",
   adresa: "Adresa",
   alergii: "Alergii",
+  consimtamantGDPR: "Acordul de prelucrare a datelor",
 };
 
 function validate(form) {
@@ -66,6 +67,11 @@ function validate(form) {
     errs.alergii = "Alergiile nu pot depăși 500 de caractere.";
   }
 
+  if (!form.consimtamantGDPR) {
+    errs.consimtamantGDPR =
+      "Trebuie să accepți politica de prelucrare a datelor cu caracter personal.";
+  }
+
   return errs;
 }
 
@@ -84,6 +90,7 @@ export default function ProfilePage() {
     telefon: "",
     adresa: "",
     alergii: "",
+    consimtamantGDPR: false,
   });
 
   useEffect(() => {
@@ -96,6 +103,7 @@ export default function ProfilePage() {
         telefon: user.telefon || "",
         adresa: user.adresa || "",
         alergii: user.alergii || "",
+        consimtamantGDPR: user.consimtamantGDPR || false,
       });
     }
   }, [user]);
@@ -106,7 +114,8 @@ export default function ProfilePage() {
   if (!user) return <Navigate to="/login" replace state={{ from: "/profile" }} />;
 
   const onChange = (e) => {
-    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+    const { name, type, checked, value } = e.target;
+    setForm((f) => ({ ...f, [name]: type === "checkbox" ? checked : value }));
     setSaved(false);
   };
   const onBlur = (e) =>
@@ -133,6 +142,8 @@ export default function ProfilePage() {
         telefon: form.telefon.trim(),
         adresa: form.adresa.trim(),
         alergii: form.alergii.trim(),
+        consimtamantGDPR: true,
+        dataConsimtamant: user.dataConsimtamant || new Date().toISOString(),
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
@@ -254,6 +265,44 @@ export default function ProfilePage() {
           onBlur={onBlur}
           error={showError("alergii") ? errors.alergii : ""}
         />
+
+        <div
+          className={`rounded-lg border p-4 ${
+            showError("consimtamantGDPR")
+              ? "border-red-300 bg-red-50"
+              : "border-slate-200 bg-slate-50"
+          }`}
+        >
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              name="consimtamantGDPR"
+              checked={form.consimtamantGDPR}
+              onChange={onChange}
+              onBlur={onBlur}
+              className="mt-1 h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+            />
+            <span className="text-sm text-slate-600">
+              Sunt de acord cu prelucrarea datelor mele cu caracter personal
+              (nume, CNP, date de contact și date medicale) în scopul
+              programării și desfășurării consultațiilor, conform{" "}
+              <Link
+                to="/confidentialitate"
+                target="_blank"
+                className="text-brand-700 font-medium hover:underline"
+              >
+                Politicii de prelucrare a datelor
+              </Link>
+              . Datele tale sunt păstrate în siguranță și nu sunt transmise
+              terților în scopuri de marketing.
+            </span>
+          </label>
+          {showError("consimtamantGDPR") && (
+            <p className="mt-2 text-xs text-red-600">
+              {errors.consimtamantGDPR}
+            </p>
+          )}
+        </div>
 
         {(submitError || errorList.length > 0) && (
           <div className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-md px-3 py-3">

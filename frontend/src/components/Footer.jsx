@@ -64,9 +64,12 @@ export default function Footer() {
 
         <div className="mt-10 pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-slate-500">
           <span>© {new Date().getFullYear()} MediCare Clinic. Toate drepturile rezervate.</span>
-          <span>
-            Programări online · Medici verificați · Suport non-stop
-          </span>
+          <Link
+            to="/confidentialitate"
+            className="hover:text-brand-700 transition"
+          >
+            Politica de prelucrare a datelor
+          </Link>
         </div>
       </div>
     </footer>
